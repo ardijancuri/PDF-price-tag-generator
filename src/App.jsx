@@ -71,10 +71,10 @@ function App() {
 
     return (
         <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-5xl mx-auto">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-4">
+                    <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent mb-4">
                         Discount Price Tag Generator
                     </h1>
                     <p className="text-slate-600 text-lg">
@@ -85,100 +85,109 @@ function App() {
                 {/* Main Form Card */}
                 <div className="card">
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Field 1 - Discount Percentage */}
-                        <div className="group">
-                            <label htmlFor="field1" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-purple-600 transition-colors">
-                                Discount Percentage 🏷️
-                            </label>
-                            <input
-                                type="text"
-                                id="field1"
-                                name="field1"
-                                value={formData.field1}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder="e.g., 40%"
-                            />
-                        </div>
+                        {/* Two Column Grid Layout */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Left Column - Fields 1, 2, 3 */}
+                            <div className="space-y-6">
+                                {/* Field 1 - Discount Percentage */}
+                                <div className="group">
+                                    <label htmlFor="field1" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                        Discount Percentage 🏷️
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="field1"
+                                        name="field1"
+                                        value={formData.field1}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="e.g., 40%"
+                                    />
+                                </div>
 
-                        {/* Field 2 - Product Name */}
-                        <div className="group">
-                            <label htmlFor="field2" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-purple-600 transition-colors">
-                                Product Name
-                            </label>
-                            <input
-                                type="text"
-                                id="field2"
-                                name="field2"
-                                value={formData.field2}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder="e.g., ЌЕБЕ СО ДЕЗЕН"
-                            />
-                        </div>
+                                {/* Field 2 - Product Name */}
+                                <div className="group">
+                                    <label htmlFor="field2" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                        Product Name
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="field2"
+                                        name="field2"
+                                        value={formData.field2}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="e.g., ЌЕБЕ СО ДЕЗЕН"
+                                    />
+                                </div>
 
-                        {/* Field 3 - Original Price */}
-                        <div className="group">
-                            <label htmlFor="field3" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-purple-600 transition-colors">
-                                Original Price (MKD) 💰
-                            </label>
-                            <input
-                                type="text"
-                                id="field3"
-                                name="field3"
-                                value={formData.field3}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder="e.g., 800,-"
-                            />
-                        </div>
+                                {/* Field 3 - Original Price */}
+                                <div className="group">
+                                    <label htmlFor="field3" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                        Original Price (MKD) 💰
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="field3"
+                                        name="field3"
+                                        value={formData.field3}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="e.g., 800,-"
+                                    />
+                                </div>
+                            </div>
 
-                        {/* Field 4 - Discounted Price */}
-                        <div className="group">
-                            <label htmlFor="field4" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-purple-600 transition-colors">
-                                Discounted Price (MKD) 🎉
-                            </label>
-                            <input
-                                type="text"
-                                id="field4"
-                                name="field4"
-                                value={formData.field4}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder="e.g., 480,-"
-                            />
-                        </div>
+                            {/* Right Column - Fields 4, 5, 6 */}
+                            <div className="space-y-6">
+                                {/* Field 4 - Discounted Price */}
+                                <div className="group">
+                                    <label htmlFor="field4" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                        Discounted Price (MKD) 🎉
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="field4"
+                                        name="field4"
+                                        value={formData.field4}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="e.g., 480,-"
+                                    />
+                                </div>
 
-                        {/* Field 5 - Product Code */}
-                        <div className="group">
-                            <label htmlFor="field5" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-purple-600 transition-colors">
-                                Product Code
-                            </label>
-                            <input
-                                type="text"
-                                id="field5"
-                                name="field5"
-                                value={formData.field5}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder="e.g., 246403"
-                            />
-                        </div>
+                                {/* Field 5 - Product Code */}
+                                <div className="group">
+                                    <label htmlFor="field5" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                        Product Code
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="field5"
+                                        name="field5"
+                                        value={formData.field5}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="e.g., 246403"
+                                    />
+                                </div>
 
-                        {/* Field 6 - Dimensions */}
-                        <div className="group">
-                            <label htmlFor="field6" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-purple-600 transition-colors">
-                                Dimensions 📏
-                            </label>
-                            <input
-                                type="text"
-                                id="field6"
-                                name="field6"
-                                value={formData.field6}
-                                onChange={handleChange}
-                                className="input-field"
-                                placeholder="e.g., Димензии: 200 cm x 230 cm"
-                            />
+                                {/* Field 6 - Dimensions */}
+                                <div className="group">
+                                    <label htmlFor="field6" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                        Dimensions 📏
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="field6"
+                                        name="field6"
+                                        value={formData.field6}
+                                        onChange={handleChange}
+                                        className="input-field"
+                                        placeholder="e.g., Димензии: 200 cm x 230 cm"
+                                    />
+                                </div>
+                            </div>
                         </div>
 
                         {/* Error Message */}
