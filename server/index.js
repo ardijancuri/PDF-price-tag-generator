@@ -98,10 +98,10 @@ app.post('/api/generate-pdf', async (req, res) => {
             { x: 80, y: height - 840, fontSize: 230, font: boldFont, color: textColor },
 
             // Field 5 - Product code "246403" - Regular weight, bottom left
-            { x: 80, y: 280, fontSize: 50, font: mediumFont, color: textColor },
+            { x: 80, y: 260, fontSize: 50, font: mediumFont, color: textColor },
 
             // Field 6 - Dimensions - Regular weight, below product code
-            { x: 80, y: 220, fontSize: 40, font: regularFont, color: textColor },
+            { x: 80, y: 200, fontSize: 40, font: regularFont, color: textColor },
         ]
 
         // Draw each field on the PDF
@@ -125,18 +125,21 @@ app.post('/api/generate-pdf', async (req, res) => {
                     // For "800,-" or "480,-" with fontSize 120-230, width is approximately 300-600 points
                     const estimatedTextWidth = position.fontSize * fieldValue.length * 0.5
                     
-                    // Position label at the right edge of the price text + small padding
-                    const labelX = position.x + estimatedTextWidth + 20
+                    // Position label at the right edge of the price text, moved more to the left
+                    const labelX = position.x + estimatedTextWidth - 40
                     
-                    // Position slightly below the price text (bottom right)
+                    // Position slightly below the price text (bottom right), moved more up
                     // Adjust based on font size - larger prices need more offset
-                    const labelY = position.y - (position.fontSize * 0.3)
+                    const labelY = position.y - (position.fontSize * 0.1) + 15
+                    
+                    // Field 4 (discounted price) gets bigger font size than Field 3 (original price)
+                    const labelFontSize = i === 4 ? 30 : 14
                     
                     firstPage.drawText('МКД / MKD', {
                         x: labelX,
                         y: labelY,
-                        size: 14, // Bigger font size
-                        font: mediumFont, // Use medium font weight
+                        size: labelFontSize,
+                        font: boldFont, // Use bold font weight
                         color: textColor,
                     })
                 }
