@@ -120,14 +120,23 @@ app.post('/api/generate-pdf', async (req, res) => {
 
                 // Add "МКД / MKD" label to the bottom right of price fields (3 and 4)
                 if (i === 3 || i === 4) {
-                    // Position label to the right and slightly below the price
-                    // Estimate: price text width ~200-300 points, so position at x: 350-400
-                    // Position slightly below the price text
+                    // Calculate approximate text width based on font size
+                    // Rough estimate: fontSize * 0.6 for average character width
+                    // For "800,-" or "480,-" with fontSize 120-230, width is approximately 300-600 points
+                    const estimatedTextWidth = position.fontSize * fieldValue.length * 0.5
+                    
+                    // Position label at the right edge of the price text + small padding
+                    const labelX = position.x + estimatedTextWidth + 20
+                    
+                    // Position slightly below the price text (bottom right)
+                    // Adjust based on font size - larger prices need more offset
+                    const labelY = position.y - (position.fontSize * 0.3)
+                    
                     firstPage.drawText('МКД / MKD', {
-                        x: 350,
-                        y: position.y - 30, // Slightly below the price text
-                        size: 10, // Tiny font size
-                        font: regularFont,
+                        x: labelX,
+                        y: labelY,
+                        size: 14, // Bigger font size
+                        font: mediumFont, // Use medium font weight
                         color: textColor,
                     })
                 }
