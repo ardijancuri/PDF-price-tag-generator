@@ -117,6 +117,20 @@ app.post('/api/generate-pdf', async (req, res) => {
                     font: position.font,
                     color: position.color, // Use custom color per field
                 })
+
+                // Add "МКД / MKD" label to the bottom right of price fields (3 and 4)
+                if (i === 3 || i === 4) {
+                    // Position label to the right and slightly below the price
+                    // Estimate: price text width ~200-300 points, so position at x: 350-400
+                    // Position slightly below the price text
+                    firstPage.drawText('МКД / MKD', {
+                        x: 350,
+                        y: position.y - 30, // Slightly below the price text
+                        size: 10, // Tiny font size
+                        font: regularFont,
+                        color: textColor,
+                    })
+                }
             }
         }
 
