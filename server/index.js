@@ -46,15 +46,15 @@ app.post('/api/generate-pdf', async (req, res) => {
 
         // Load Futura Cyrillic fonts (better support for Cyrillic characters)
         const futuraBookPath = join(__dirname, 'fonts', 'FuturaCyrillicBook.ttf')
-        const futuraHeavyPath = join(__dirname, 'fonts', 'FuturaCyrillicHeavy.ttf')
+        const futuraBoldPath = join(__dirname, 'fonts', 'FuturaCyrillicBold.ttf')
         const futuraDemiPath = join(__dirname, 'fonts', 'FuturaCyrillicDemi.ttf')
 
         const futuraBookBytes = await readFile(futuraBookPath)
-        const futuraHeavyBytes = await readFile(futuraHeavyPath)
+        const futuraBoldBytes = await readFile(futuraBoldPath)
         const futuraDemiBytes = await readFile(futuraDemiPath)
 
         const regularFont = await pdfDoc.embedFont(futuraBookBytes)
-        const boldFont = await pdfDoc.embedFont(futuraHeavyBytes)
+        const boldFont = await pdfDoc.embedFont(futuraBoldBytes)
         const mediumFont = await pdfDoc.embedFont(futuraDemiBytes)
 
         // Get the first page
