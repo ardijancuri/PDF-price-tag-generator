@@ -44,16 +44,16 @@ app.post('/api/generate-pdf', async (req, res) => {
         // Register fontkit to enable custom font embedding
         pdfDoc.registerFontkit(fontkit)
 
-        // Load Futura fonts
-        const futuraBookPath = join(__dirname, 'fonts', 'FUTURA BK BT BOOK.TTF')
-        const futuraBoldPath = join(__dirname, 'fonts', 'FUTURA MD BT BOLD.TTF')
-        const futuraMediumPath = join(__dirname, 'fonts', 'FUTURA MD BT MEDIUM.TTF')
+        // Load Futura Cyrillic fonts (better support for Cyrillic characters)
+        const futuraLightPath = join(__dirname, 'fonts', 'FuturaCyrillicLight.ttf')
+        const futuraBoldPath = join(__dirname, 'fonts', 'FuturaCyrillicBold.ttf')
+        const futuraMediumPath = join(__dirname, 'fonts', 'FuturaCyrillicMedium.ttf')
 
-        const futuraBookBytes = await readFile(futuraBookPath)
+        const futuraLightBytes = await readFile(futuraLightPath)
         const futuraBoldBytes = await readFile(futuraBoldPath)
         const futuraMediumBytes = await readFile(futuraMediumPath)
 
-        const regularFont = await pdfDoc.embedFont(futuraBookBytes)
+        const regularFont = await pdfDoc.embedFont(futuraLightBytes)
         const boldFont = await pdfDoc.embedFont(futuraBoldBytes)
         const mediumFont = await pdfDoc.embedFont(futuraMediumBytes)
 
@@ -86,7 +86,7 @@ app.post('/api/generate-pdf', async (req, res) => {
             { x: 80, y: height - 250, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // White text
 
             // Field 2 - Product name "КЕБЕ СО ДЕЗЕН" - Bold, large, centered
-            { x: 80, y: height - 520, fontSize: 70, font: boldFont, color: rgb(0, 0, 0) },
+            { x: 80, y: height - 520, fontSize: 70, font: mediumFont, color: rgb(0, 0, 0) },
 
             // Field 3 - Original price "800,-" - Bold, right side after МКД label
             { x: 80, y: height - 650, fontSize: 120, font: boldFont, color: rgb(0, 0, 0) },
@@ -95,7 +95,7 @@ app.post('/api/generate-pdf', async (req, res) => {
             { x: 80, y: height - 840, fontSize: 230, font: boldFont, color: rgb(0, 0, 0) },
 
             // Field 5 - Product code "246403" - Regular weight, bottom left
-            { x: 80, y: 280, fontSize: 50, font: boldFont, color: rgb(0, 0, 0) },
+            { x: 80, y: 280, fontSize: 50, font: mediumFont, color: rgb(0, 0, 0) },
 
             // Field 6 - Dimensions - Regular weight, below product code
             { x: 80, y: 220, fontSize: 40, font: regularFont, color: rgb(0, 0, 0) },
