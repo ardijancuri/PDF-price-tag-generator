@@ -73,8 +73,8 @@ function App() {
         <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <div className="max-w-5xl mx-auto w-full">
                 {/* Header */}
-                <div className="text-center mb-8 md:mb-12">
-                    <h1 className="text-5xl font-bold text-blue-600 leading-tight md:leading-relaxed mb-4">
+                <div className="text-center mb-4 md:mb-12">
+                    <h1 className="text-3xl md:text-5xl font-bold text-blue-600 leading-snug md:leading-relaxed mb-4">
                         Discount Price Tag Generator
                     </h1>
                     <p className="text-slate-600 text-lg">
@@ -86,9 +86,9 @@ function App() {
                 <div className="card">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Two Column Grid Layout */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                             {/* Left Column - Fields 1, 2, 3 */}
-                            <div className="space-y-6">
+                            <div className="space-y-4 md:space-y-6">
                                 {/* Field 1 - Discount Percentage */}
                                 <div className="group">
                                     <label htmlFor="field1" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
@@ -142,7 +142,7 @@ function App() {
                             </div>
 
                             {/* Right Column - Fields 4, 5, 6 */}
-                            <div className="space-y-6">
+                            <div className="space-y-4 md:space-y-6">
                                 {/* Field 4 - Discounted Price */}
                                 <div className="group">
                                     <label htmlFor="field4" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
