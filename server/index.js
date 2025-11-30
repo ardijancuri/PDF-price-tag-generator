@@ -45,15 +45,15 @@ app.post('/api/generate-pdf', async (req, res) => {
         pdfDoc.registerFontkit(fontkit)
 
         // Load Futura Cyrillic fonts (better support for Cyrillic characters)
-        const futuraLightPath = join(__dirname, 'fonts', 'FuturaCyrillicLight.ttf')
+        const futuraBookPath = join(__dirname, 'fonts', 'FuturaCyrillicBook.ttf')
         const futuraHeavyPath = join(__dirname, 'fonts', 'FuturaCyrillicHeavy.ttf')
         const futuraMediumPath = join(__dirname, 'fonts', 'FuturaCyrillicMedium.ttf')
 
-        const futuraLightBytes = await readFile(futuraLightPath)
+        const futuraBookBytes = await readFile(futuraBookPath)
         const futuraHeavyBytes = await readFile(futuraHeavyPath)
         const futuraMediumBytes = await readFile(futuraMediumPath)
 
-        const regularFont = await pdfDoc.embedFont(futuraLightBytes)
+        const regularFont = await pdfDoc.embedFont(futuraBookBytes)
         const boldFont = await pdfDoc.embedFont(futuraHeavyBytes)
         const mediumFont = await pdfDoc.embedFont(futuraMediumBytes)
 
