@@ -204,12 +204,56 @@ Health check endpoint.
 - Frontend (5173): Change in `vite.config.js`
 - Backend (3000): Change `PORT` in `server/index.js`
 
+## 🌐 Deployment
+
+This project is **ready to deploy to Vercel**! We've included comprehensive deployment guides:
+
+### 📖 Deployment Documentation
+
+| Guide | Purpose | Time |
+|-------|---------|------|
+| **[DEPLOY.md](DEPLOY.md)** | Quick command reference | 2 min |
+| **[DEPLOYMENT_STEPS.md](DEPLOYMENT_STEPS.md)** | Step-by-step checklist | 5 min |
+| **[VERCEL_QUICKSTART.md](VERCEL_QUICKSTART.md)** | Fast start guide | 10 min |
+| **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** | Complete detailed guide | 20 min |
+| **[README_DEPLOYMENT.md](README_DEPLOYMENT.md)** | Overview & architecture | 15 min |
+
+### ⚡ Quick Deploy
+
+```bash
+# 1. Commit your code
+git add .
+git commit -m "Ready for deployment"
+git push origin main
+
+# 2. Deploy to Vercel
+# Visit https://vercel.com/new
+# Import your repository
+# Click "Deploy"
+# Done! ✅
+```
+
+### 🎯 What's Included
+
+- ✅ Serverless functions for PDF generation
+- ✅ Optimized build configuration
+- ✅ All dependencies merged
+- ✅ Fonts and templates included
+- ✅ Environment configuration
+- ✅ Health check endpoint
+- ✅ Production-ready setup
+
+**Your app will be live on Vercel in ~2 minutes!** 🚀
+
+See **[DEPLOY.md](DEPLOY.md)** for copy-paste commands.
+
 ## 📚 Additional Resources
 
 - [pdf-lib Documentation](https://pdf-lib.js.org/)
 - [React Documentation](https://react.dev/)
 - [Vite Documentation](https://vitejs.dev/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/)
+- [Vercel Documentation](https://vercel.com/docs)
 
 ## 📝 License
 
@@ -217,4 +261,7 @@ This project is provided as-is for your use.
 
 ---
 
-**Need Help?** Check the comments in `server/index.js` for detailed customization guidance.
+**Need Help?**
+- **Local Development:** Check comments in `server/index.js`
+- **Deployment:** See `DEPLOY.md` or `DEPLOYMENT_STEPS.md`
+- **Troubleshooting:** See `DEPLOYMENT_GUIDE.md`
