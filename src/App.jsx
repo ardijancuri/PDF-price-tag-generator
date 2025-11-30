@@ -70,11 +70,11 @@ function App() {
     }
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-5xl mx-auto">
+        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+            <div className="max-w-5xl mx-auto w-full">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent mb-4">
+                    <h1 className="text-5xl font-bold text-blue-600 leading-tight md:leading-relaxed mb-4">
                         Discount Price Tag Generator
                     </h1>
                     <p className="text-slate-600 text-lg">
@@ -91,8 +91,9 @@ function App() {
                             <div className="space-y-6">
                                 {/* Field 1 - Discount Percentage */}
                                 <div className="group">
-                                    <label htmlFor="field1" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
-                                        Discount Percentage 🏷️
+                                    <label htmlFor="field1" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                        <i className="fas fa-tag text-blue-600"></i>
+                                        Discount Percentage
                                     </label>
                                     <input
                                         type="text"
@@ -107,7 +108,8 @@ function App() {
 
                                 {/* Field 2 - Product Name */}
                                 <div className="group">
-                                    <label htmlFor="field2" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                    <label htmlFor="field2" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                        <i className="fas fa-box text-blue-600"></i>
                                         Product Name
                                     </label>
                                     <input
@@ -123,8 +125,9 @@ function App() {
 
                                 {/* Field 3 - Original Price */}
                                 <div className="group">
-                                    <label htmlFor="field3" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
-                                        Original Price (MKD) 💰
+                                    <label htmlFor="field3" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                        <i className="fas fa-dollar-sign text-blue-600"></i>
+                                        Original Price (MKD)
                                     </label>
                                     <input
                                         type="text"
@@ -142,8 +145,9 @@ function App() {
                             <div className="space-y-6">
                                 {/* Field 4 - Discounted Price */}
                                 <div className="group">
-                                    <label htmlFor="field4" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
-                                        Discounted Price (MKD) 🎉
+                                    <label htmlFor="field4" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                        <i className="fas fa-percent text-blue-600"></i>
+                                        Discounted Price (MKD)
                                     </label>
                                     <input
                                         type="text"
@@ -158,7 +162,8 @@ function App() {
 
                                 {/* Field 5 - Product Code */}
                                 <div className="group">
-                                    <label htmlFor="field5" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
+                                    <label htmlFor="field5" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                        <i className="fas fa-barcode text-blue-600"></i>
                                         Product Code
                                     </label>
                                     <input
@@ -174,8 +179,9 @@ function App() {
 
                                 {/* Field 6 - Dimensions */}
                                 <div className="group">
-                                    <label htmlFor="field6" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors">
-                                        Dimensions 📏
+                                    <label htmlFor="field6" className="block text-sm font-semibold text-slate-700 mb-2 group-hover:text-blue-600 transition-colors flex items-center gap-2">
+                                        <i className="fas fa-ruler-combined text-blue-600"></i>
+                                        Dimensions
                                     </label>
                                     <input
                                         type="text"
@@ -192,35 +198,41 @@ function App() {
 
                         {/* Error Message */}
                         {error && (
-                            <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg animate-pulse">
-                                <p className="font-semibold">Error: {error}</p>
+                            <div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg animate-pulse text-center">
+                                <p className="font-semibold flex items-center justify-center gap-2">
+                                    <i className="fas fa-exclamation-circle"></i>
+                                    Error: {error}
+                                </p>
                             </div>
                         )}
 
                         {/* Success Message */}
                         {success && (
-                            <div className="bg-green-50 border-2 border-green-200 text-green-700 px-4 py-3 rounded-lg animate-pulse">
-                                <p className="font-semibold">✓ PDF generated successfully!</p>
+                            <div className="bg-green-50 border-2 border-green-200 text-green-700 px-4 py-3 rounded-lg animate-pulse text-center">
+                                <p className="font-semibold flex items-center justify-center gap-2">
+                                    <i className="fas fa-check-circle"></i>
+                                    PDF generated successfully!
+                                </p>
                             </div>
                         )}
 
                         {/* Submit Button */}
-                        <div className="pt-4">
+                        <div className="pt-4 flex justify-center">
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="btn-primary w-full"
+                                className="btn-primary w-full md:w-auto px-12"
                             >
                                 {isLoading ? (
-                                    <span className="flex items-center justify-center">
-                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                        </svg>
+                                    <span className="flex items-center justify-center gap-3">
+                                        <i className="fas fa-spinner fa-spin"></i>
                                         Generating PDF...
                                     </span>
                                 ) : (
-                                    '📄 Generate Price Tag PDF'
+                                    <span className="flex items-center justify-center gap-2">
+                                        <i className="fas fa-file-pdf"></i>
+                                        Generate Price Tag PDF
+                                    </span>
                                 )}
                             </button>
                         </div>
@@ -229,7 +241,17 @@ function App() {
 
                 {/* Footer Info */}
                 <div className="mt-8 text-center text-sm text-slate-500">
-                    <p>Your discount price tag PDF will be generated with "ПОПУСТ / ZBRITJE" header</p>
+                    <p>
+                        Powered by{' '}
+                        <a 
+                            href="https://oninova.net" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+                        >
+                            ONINOVA
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
