@@ -1,7 +1,8 @@
 import express from 'express'
 import cors from 'cors'
 import { readFile } from 'fs/promises'
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
+import { PDFDocument, rgb } from 'pdf-lib'
+import fontkit from '@pdf-lib/fontkit'
 import { fileURLToPath } from 'url'
 import { dirname, join } from 'path'
 
@@ -40,9 +41,21 @@ app.post('/api/generate-pdf', async (req, res) => {
         // Load the PDF document
         const pdfDoc = await PDFDocument.load(existingPdfBytes)
 
-        // Load standard fonts (Helvetica-Bold is similar to Futura PT - clean sans-serif)
-        const regularFont = await pdfDoc.embedFont(StandardFonts.Helvetica)
-        const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+        // Register fontkit to enable custom font embedding
+        pdfDoc.registerFontkit(fontkit)
+
+        // Load Futura fonts
+        const futuraBookPath = join(__dirname, 'fonts', 'FUTURA BK BT BOOK.TTF')
+        const futuraBoldPath = join(__dirname, 'fonts', 'FUTURA MD BT BOLD.TTF')
+        const futuraMediumPath = join(__dirname, 'fonts', 'FUTURA MD BT MEDIUM.TTF')
+
+        const futuraBookBytes = await readFile(futuraBookPath)
+        const futuraBoldBytes = await readFile(futuraBoldPath)
+        const futuraMediumBytes = await readFile(futuraMediumPath)
+
+        const regularFont = await pdfDoc.embedFont(futuraBookBytes)
+        const boldFont = await pdfDoc.embedFont(futuraBoldBytes)
+        const mediumFont = await pdfDoc.embedFont(futuraMediumBytes)
 
         // Get the first page
         const pages = pdfDoc.getPages()
