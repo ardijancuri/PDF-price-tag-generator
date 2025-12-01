@@ -182,6 +182,26 @@ app.post('/api/generate-pdf', async (req, res) => {
                     color: position.color, // Use custom color per field
                 })
 
+                // Add red strikethrough line for Original Price (Field 3) in Template 1 (base) and Template 4 (base3)
+                if (i === 3 && (selectedTemplate === 'base' || selectedTemplate === 'base3')) {
+                    // Calculate approximate text width
+                    const estimatedTextWidth = position.fontSize * fieldValue.length * 0.5
+                    
+                    // Calculate line position (middle of text vertically)
+                    const lineY = position.y + (position.fontSize * 0.35) // Adjust to center of text
+                    const lineStartX = position.x
+                    const lineEndX = position.x + estimatedTextWidth
+                    
+                    // Draw red strikethrough line
+                    const strikeColor = rgb(230 / 255, 53 / 255, 39 / 255) // #e63527
+                    firstPage.drawLine({
+                        start: { x: lineStartX, y: lineY },
+                        end: { x: lineEndX, y: lineY },
+                        thickness: 6,
+                        color: strikeColor,
+                    })
+                }
+
                 // Add "МКД / MKD" label to the bottom right of price fields (3 and 4)
                 if (i === 3 || i === 4) {
                     // Calculate approximate text width based on font size
