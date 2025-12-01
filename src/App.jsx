@@ -12,16 +12,18 @@ import base7Img from './images/base7.jpg'
 import comboLogo from './images/combo-logo.svg'
 
 function App() {
-    // Template definitions
+    // Template definitions - Ordered for dashboard layout:
+    // Row 1: 1, 2, 5, 7
+    // Row 2: 4, 3, 6, 8
     const templates = [
         { id: 'base', name: 'Template 1 - Discount', image: baseImg },
-        { id: 'base1', name: 'Template 2 - Discount', image: base1Img },
-        { id: 'base2', name: 'Template 3 - Best Price', image: base2Img },
-        { id: 'base3', name: 'Template 4 - Best Price Alt', image: base3Img },
-        { id: 'base4', name: 'Template 5 - Discount Alt', image: base4Img },
-        { id: 'base5', name: 'Template 6 - Top Product', image: base5Img },
-        { id: 'base6', name: 'Template 7 - Top Product Alt', image: base6Img },
-        { id: 'base7', name: 'Template 8 - Super Combo', image: base7Img },
+        { id: 'base1', name: 'Template 2 - Best Price', image: base1Img },
+        { id: 'base4', name: 'Template 3 - Top Product', image: base4Img },
+        { id: 'base6', name: 'Template 4 - Super Combo', image: base6Img },
+        { id: 'base3', name: 'Template 5 - Discount Alt', image: base3Img },
+        { id: 'base2', name: 'Template 6 - Best Price Alt', image: base2Img },
+        { id: 'base5', name: 'Template 7 - Top Product Alt', image: base5Img },
+        { id: 'base7', name: 'Template 8 - Super Combo Alt', image: base7Img },
     ]
 
     // State for template selection
