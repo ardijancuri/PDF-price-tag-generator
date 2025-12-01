@@ -33,9 +33,14 @@ app.use(express.json())
 app.post('/api/generate-pdf', async (req, res) => {
     try {
         const formData = req.body
+        const selectedTemplate = formData.template || 'base' // Default to 'base' if no template selected
 
-        // Load the base PDF template
-        const templatePath = join(__dirname, 'templates', 'base.pdf')
+        console.log('📝 Received form data:', formData)
+        console.log('🎨 Selected template:', selectedTemplate)
+
+        // Load the selected base PDF template
+        const templatePath = join(__dirname, 'templates', `${selectedTemplate}.pdf`)
+        console.log('📄 Loading template from:', templatePath)
         const existingPdfBytes = await readFile(templatePath)
 
         // Load the PDF document
@@ -65,47 +70,106 @@ app.post('/api/generate-pdf', async (req, res) => {
         console.log(`PDF dimensions: ${width} x ${height} points`)
 
         /**
-         * FIELD POSITIONS CONFIGURATION
+         * FIELD POSITIONS CONFIGURATION FOR EACH TEMPLATE
          * 
          * PDF dimensions: A4 (841.89 x 1190.55 points)
-         * Positions configured to match final-pdf.pdf layout exactly
-         * 
-         * Layout structure (from top to bottom):
-         * - Header: "ПОПУСТ / ZBRITJE" (already in base.pdf - blue background at top)
-         * - Field 1: Discount "40%" - HUGE bold WHITE text at top, centered
-         * - Field 2: Product name - Bold, large, centered
-         * - Prices section (right side):
-         *   - Field 3: Original price (aligned after "МКД / MKD" label)
-         *   - Field 4: Discounted price (aligned after "МКД / МКd" label)
-         * - Bottom section (left side):
-         *   - Field 5: Product code
-         *   - Field 6: Dimensions
+         * Each template has different layout and requires different positioning
          */
-        // Convert hex color #373435 to RGB (55, 52, 53)
         const textColor = rgb(55 / 255, 52 / 255, 53 / 255) // #373435
+        
+        // Define field positions for each template
+        const templateConfigs = {
+            // Template 1 (base) - Orange "40% ПОПУСТ" 
+            base: [
+                { x: 80, y: height - 250, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) },
+                { x: 80, y: height - 520, fontSize: 70, font: mediumFont, color: textColor },
+                { x: 80, y: height - 650, fontSize: 120, font: boldFont, color: textColor },
+                { x: 80, y: height - 840, fontSize: 230, font: boldFont, color: textColor },
+                { x: 80, y: 260, fontSize: 50, font: mediumFont, color: textColor },
+                { x: 80, y: 200, fontSize: 40, font: regularFont, color: textColor },
+            ],
+            
+            // Template 2 (base1) - White/Orange "40% ПОПУСТ"
+            base1: [
+                { x: 80, y: height - 250, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) },
+                { x: 80, y: height - 560, fontSize: 70, font: mediumFont, color: textColor }, // Product name moved lower
+                { x: 80, y: height - 650, fontSize: 120, font: boldFont, color: textColor }, // Original price (not used but kept for consistency)
+                { x: 80, y: height - 760, fontSize: 230, font: boldFont, color: textColor }, // Discounted price moved up
+                { x: 80, y: 340, fontSize: 64, font: mediumFont, color: textColor }, // Product code moved up
+                { x: 80, y: 280, fontSize: 48, font: regularFont, color: textColor }, // Dimensions moved up
+            ],
+            
+            // Template 3 (base2) - Yellow "BEST PRICE"
+            base2: [
+                { x: 80, y: height - 250, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) },
+                { x: 80, y: height - 620, fontSize: 70, font: mediumFont, color: textColor }, // Product name moved lower
+                { x: 80, y: height - 660, fontSize: 120, font: boldFont, color: textColor }, // Original price (not used but kept for consistency)
+                { x: 80, y: height - 810, fontSize: 230, font: boldFont, color: textColor }, // Discounted price moved up
+                { x: 80, y: 300, fontSize: 64, font: mediumFont, color: textColor }, // Product code moved up
+                { x: 80, y: 240, fontSize: 48, font: regularFont, color: textColor }, // Dimensions moved up
+            ],
+            
+            // Template 4 (base3) - Yellow/White "BEST PRICE"
+            base3: [
+                { x: 80, y: height - 220, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // Moved up
+                { x: 80, y: height - 460, fontSize: 100, font: mediumFont, color: rgb(1, 1, 1) }, // Moved up, white
+                { x: 80, y: height - 600, fontSize: 120, font: boldFont, color: rgb(1, 1, 1) }, // Moved up, white
+                { x: 80, y: height - 810, fontSize: 230, font: boldFont, color: rgb(1, 1, 1) }, // Moved up, white
+                { x: 80, y: 300, fontSize: 50, font: mediumFont, color: rgb(1, 1, 1) }, // Moved up, white
+                { x: 80, y: 240, fontSize: 40, font: regularFont, color: rgb(1, 1, 1) }, // Moved up, white
+            ],
+            
+            // Template 5 (base4) - Orange "40% ПОПУСТ" (alt layout)
+            base4: [
+                { x: 80, y: height - 220, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // Moved up
+                { x: 80, y: height - 530, fontSize: 70, font: mediumFont, color: textColor }, // Product name moved up
+                { x: 80, y: height - 620, fontSize: 120, font: boldFont, color: textColor }, // Original price moved up (not used but kept for consistency)
+                { x: 80, y: height - 730, fontSize: 230, font: boldFont, color: textColor }, // Discounted price moved up
+                { x: 80, y: 340, fontSize: 90, font: mediumFont, color: textColor }, // Product code moved up
+                { x: 80, y: 280, fontSize: 48, font: regularFont, color: textColor }, // Dimensions moved up
+            ],
+            
+            // Template 6 (base5) - Green "TOP PRODUCT" (same as Template 8, with white text)
+            base5: [
+                { x: 170, y: height - 220, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // Moved up, white
+                { x: 170, y: height - 530, fontSize: 70, font: mediumFont, color: rgb(1, 1, 1) }, // Product name moved up, white
+                { x: 170, y: height - 620, fontSize: 120, font: boldFont, color: rgb(1, 1, 1) }, // Original price moved up, white (not used but kept for consistency)
+                { x: 170, y: height - 680, fontSize: 180, font: boldFont, color: rgb(1, 1, 1) }, // Discounted price moved up, white
+                { x: 170, y: 410, fontSize: 90, font: mediumFont, color: rgb(1, 1, 1) }, // Product code moved up, white
+                { x: 170, y: 350, fontSize: 48, font: regularFont, color: rgb(1, 1, 1) }, // Dimensions moved up, white
+            ],
+            
+            // Template 7 (base6) - Green/White "TOP PRODUCT" (same as Template 5)
+            base6: [
+                { x: 80, y: height - 220, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // Moved up
+                { x: 80, y: height - 530, fontSize: 70, font: mediumFont, color: textColor }, // Product name moved up
+                { x: 80, y: height - 620, fontSize: 120, font: boldFont, color: textColor }, // Original price moved up (not used but kept for consistency)
+                { x: 80, y: height - 730, fontSize: 230, font: boldFont, color: textColor }, // Discounted price moved up
+                { x: 80, y: 340, fontSize: 90, font: mediumFont, color: textColor }, // Product code moved up
+                { x: 80, y: 280, fontSize: 48, font: regularFont, color: textColor }, // Dimensions moved up
+            ],
+            
+            // Template 8 (base7) - Pink "СУПЕР COMBO" (same as Template 7, but with white text)
+            base7: [
+                { x: 80, y: height - 220, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // Moved up, white
+                { x: 80, y: height - 530, fontSize: 70, font: mediumFont, color: rgb(1, 1, 1) }, // Product name moved up, white
+                { x: 80, y: height - 620, fontSize: 120, font: boldFont, color: rgb(1, 1, 1) }, // Original price moved up, white (not used but kept for consistency)
+                { x: 80, y: height - 730, fontSize: 230, font: boldFont, color: rgb(1, 1, 1) }, // Discounted price moved up, white
+                { x: 80, y: 340, fontSize: 90, font: mediumFont, color: rgb(1, 1, 1) }, // Product code moved up, white
+                { x: 80, y: 280, fontSize: 48, font: regularFont, color: rgb(1, 1, 1) }, // Dimensions moved up, white
+            ],
+        }
 
-        const fieldPositions = [
-            // Field 1 - Discount "40%" - HUGE bold WHITE text, top center of page
-            { x: 80, y: height - 250, fontSize: 260, font: boldFont, color: rgb(1, 1, 1) }, // White text
-
-            // Field 2 - Product name "КЕБЕ СО ДЕЗЕН" - Bold, large, centered
-            { x: 80, y: height - 520, fontSize: 70, font: mediumFont, color: textColor },
-
-            // Field 3 - Original price "800,-" - Bold, right side after МКД label
-            { x: 80, y: height - 650, fontSize: 120, font: boldFont, color: textColor },
-
-            // Field 4 - Discounted price "480,-" - Bold, right side after МКД label
-            { x: 80, y: height - 840, fontSize: 230, font: boldFont, color: textColor },
-
-            // Field 5 - Product code "246403" - Regular weight, bottom left
-            { x: 80, y: 260, fontSize: 50, font: mediumFont, color: textColor },
-
-            // Field 6 - Dimensions - Regular weight, below product code
-            { x: 80, y: 200, fontSize: 40, font: regularFont, color: textColor },
-        ]
+        // Get the field positions for the selected template
+        const fieldPositions = templateConfigs[selectedTemplate] || templateConfigs.base
 
         // Draw each field on the PDF
         for (let i = 1; i <= 6; i++) {
+            // Skip Field 1 (Discount Percentage) and Field 3 (Original Price) for Template 2 (base1), Template 3 (base2), Template 5 (base4), Template 6 (base5), Template 7 (base6), and Template 8 (base7)
+            if ((i === 1 || i === 3) && (selectedTemplate === 'base1' || selectedTemplate === 'base2' || selectedTemplate === 'base4' || selectedTemplate === 'base5' || selectedTemplate === 'base6' || selectedTemplate === 'base7')) {
+                continue
+            }
+
             const fieldValue = formData[`field${i}`] || ''
             const position = fieldPositions[i - 1]
 
@@ -135,12 +199,15 @@ app.post('/api/generate-pdf', async (req, res) => {
                     // Field 4 (discounted price) gets bigger font size than Field 3 (original price)
                     const labelFontSize = i === 4 ? 30 : 14
                     
+                    // Use white color for Template 4 (base3), Template 6 (base5), and Template 8 (base7), otherwise use textColor
+                    const labelColor = (selectedTemplate === 'base3' || selectedTemplate === 'base5' || selectedTemplate === 'base7') ? rgb(1, 1, 1) : textColor
+                    
                     firstPage.drawText('МКД / MKD', {
                         x: labelX,
                         y: labelY,
                         size: labelFontSize,
                         font: boldFont, // Use bold font weight
-                        color: textColor,
+                        color: labelColor,
                     })
                 }
             }
