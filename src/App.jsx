@@ -43,6 +43,10 @@ function App() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(false)
+    const [csvFile, setCsvFile] = useState(null)
+    const [csvData, setCsvData] = useState([])
+    const [isBatchMode, setIsBatchMode] = useState(false)
+    const [isDragging, setIsDragging] = useState(false)
 
     // Handle template selection
     const handleTemplateSelect = (templateId) => {
@@ -65,6 +69,233 @@ function App() {
         }))
     }
 
+    // Handle CSV template download
+    const handleDownloadTemplate = () => {
+        // Helper function to properly escape CSV fields
+        const escapeCsvField = (field) => {
+            if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+                return `"${field.replace(/"/g, '""')}"`
+            }
+            return field
+        }
+        
+        // Headers matching the field order: field1, field2, field3, field4, field5, field6
+        const headers = [
+            'Discount Percentage',  // field1
+            'Product Name',         // field2
+            'Original Price',        // field3
+            'Discounted Price',     // field4
+            'Product Code',         // field5
+            'Dimensions'            // field6
+        ]
+        
+        // Sample data matching the same order (all price fields use whole numbers, no decimals)
+        const sampleData = [
+            '40',                                      // field1 - Discount Percentage (whole number, no decimals)
+            'ЌЕБЕ СО ДЕЗЕН',                         // field2 - Product Name
+            '800',                                     // field3 - Original Price (whole number, no decimals)
+            '480',                                     // field4 - Discounted Price (whole number, no decimals)
+            '246403',                                 // field5 - Product Code
+            'Димензии: 200 cm x 230 cm'               // field6 - Dimensions
+        ]
+        
+        // Properly format CSV with quoted fields
+        const csvContent = [
+            headers.map(escapeCsvField).join(','),
+            sampleData.map(escapeCsvField).join(',')
+        ].join('\n')
+        
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'price-tag-template.csv'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+    }
+
+    // Process CSV file content
+    const processCsvFile = (file) => {
+        if (!file) return
+        
+        // Validate file type
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            setError('Please upload a CSV file')
+            return
+        }
+
+        setCsvFile(file)
+        
+        const reader = new FileReader()
+        reader.onload = (event) => {
+            try {
+                const text = event.target.result
+                const rows = text.split('\n').map(row => row.trim()).filter(row => row)
+                
+                if (rows.length < 2) {
+                    setError('CSV file must contain at least a header row and one data row')
+                    return
+                }
+                
+                // Parse CSV row properly handling quoted fields
+                const parseCsvRow = (row) => {
+                    const fields = []
+                    let currentField = ''
+                    let insideQuotes = false
+                    
+                    for (let i = 0; i < row.length; i++) {
+                        const char = row[i]
+                        const nextChar = row[i + 1]
+                        
+                        if (char === '"') {
+                            if (insideQuotes && nextChar === '"') {
+                                // Escaped quote
+                                currentField += '"'
+                                i++ // Skip next quote
+                            } else {
+                                // Toggle quote state
+                                insideQuotes = !insideQuotes
+                            }
+                        } else if (char === ',' && !insideQuotes) {
+                            // Field separator
+                            fields.push(currentField.trim())
+                            currentField = ''
+                        } else {
+                            currentField += char
+                        }
+                    }
+                    // Add last field
+                    fields.push(currentField.trim())
+                    return fields
+                }
+                
+                // Skip header row and parse data rows
+                const dataRows = rows.slice(1)
+                
+                const parsedData = dataRows.map((row, index) => {
+                    const fields = parseCsvRow(row)
+                    
+                    // Process field1 (Discount Percentage) - automatically add % sign if missing
+                    let discountPercentage = (fields[0] || '').trim()
+                    if (discountPercentage) {
+                        // Remove any existing % sign
+                        discountPercentage = discountPercentage.replace(/%/g, '').trim()
+                        // Check if it's a whole number (no decimals)
+                        const numValue = parseFloat(discountPercentage)
+                        if (!isNaN(numValue) && Number.isInteger(numValue)) {
+                            // Add % sign automatically
+                            discountPercentage = numValue.toString() + '%'
+                        } else if (!isNaN(numValue)) {
+                            // If it has decimals, round to whole number and add %
+                            discountPercentage = Math.round(numValue).toString() + '%'
+                        }
+                    }
+                    
+                    // Process field3 (Original Price) - automatically add ",-" if missing
+                    let originalPrice = (fields[2] || '').trim()
+                    if (originalPrice) {
+                        // Extract numeric value (parseFloat will ignore non-numeric characters at the end)
+                        const numValue = parseFloat(originalPrice)
+                        if (!isNaN(numValue)) {
+                            // Round to whole number if it has decimals, then add ",-"
+                            originalPrice = Math.round(numValue).toString() + ',-'
+                        }
+                    }
+                    
+                    // Process field4 (Discounted Price) - automatically add ",-" if missing
+                    let discountedPrice = (fields[3] || '').trim()
+                    if (discountedPrice) {
+                        // Extract numeric value (parseFloat will ignore non-numeric characters at the end)
+                        const numValue = parseFloat(discountedPrice)
+                        if (!isNaN(numValue)) {
+                            // Round to whole number if it has decimals, then add ",-"
+                            discountedPrice = Math.round(numValue).toString() + ',-'
+                        }
+                    }
+                    
+                    // Map columns to field names (order: field1, field2, field3, field4, field5, field6)
+                    return {
+                        field1: discountPercentage, // Discount Percentage (with % added automatically)
+                        field2: fields[1] || '', // Product Name
+                        field3: originalPrice, // Original Price (with ",-" added automatically)
+                        field4: discountedPrice, // Discounted Price (with ",-" added automatically)
+                        field5: fields[4] || '', // Product Code
+                        field6: fields[5] || ''  // Dimensions
+                    }
+                }).filter(product => {
+                    // Filter out completely empty rows
+                    return product.field1 || product.field2 || product.field3 || 
+                           product.field4 || product.field5 || product.field6
+                })
+                
+                if (parsedData.length === 0) {
+                    setError('No valid product data found in CSV file')
+                    return
+                }
+                
+                setCsvData(parsedData)
+                setIsBatchMode(true)
+                setSuccess(false)
+                setError(null)
+            } catch (err) {
+                setError(`Failed to parse CSV file: ${err.message}`)
+            }
+        }
+        
+        reader.onerror = () => {
+            setError('Failed to read CSV file')
+        }
+        
+        reader.readAsText(file, 'UTF-8')
+    }
+
+    // Handle CSV file upload
+    const handleCsvUpload = (e) => {
+        const file = e.target.files[0]
+        processCsvFile(file)
+    }
+
+    // Handle drag and drop
+    const handleDragOver = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(true)
+    }
+
+    const handleDragLeave = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(false)
+    }
+
+    const handleDrop = (e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsDragging(false)
+
+        if (!isBatchMode) {
+            const files = Array.from(e.dataTransfer.files)
+            const csvFile = files.find(file => file.name.toLowerCase().endsWith('.csv'))
+            
+            if (csvFile) {
+                processCsvFile(csvFile)
+            } else {
+                setError('Please drop a CSV file')
+            }
+        }
+    }
+
+    // Clear CSV data and return to single mode
+    const handleClearCsv = () => {
+        setCsvFile(null)
+        setCsvData([])
+        setIsBatchMode(false)
+        setError(null)
+        setSuccess(false)
+    }
+
     // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -73,41 +304,80 @@ function App() {
         setSuccess(false)
 
         try {
-            // Send form data to backend with selected template
-            console.log('Sending to backend:', { ...formData, template: selectedTemplate })
-            
-            const response = await fetch('/api/generate-pdf', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ...formData,
-                    template: selectedTemplate
-                }),
-            })
+            // Check if we're in batch mode with CSV data
+            if (isBatchMode && csvData.length > 0) {
+                // Batch processing for CSV data
+                console.log('Batch generating PDFs for', csvData.length, 'products')
+                
+                const response = await fetch('/api/generate-pdf-batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        products: csvData,
+                        template: selectedTemplate
+                    }),
+                })
 
-            if (!response.ok) {
-                throw new Error('Failed to generate PDF')
+                if (!response.ok) {
+                    throw new Error('Failed to generate batch PDFs')
+                }
+
+                // Get the PDF blob
+                const blob = await response.blob()
+
+                // Create a download link and trigger download
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `price-tags-batch-${csvData.length}-items.pdf`
+                document.body.appendChild(a)
+                a.click()
+
+                // Cleanup
+                window.URL.revokeObjectURL(url)
+                document.body.removeChild(a)
+
+                setSuccess(true)
+                setTimeout(() => setSuccess(false), 3000)
+            } else {
+                // Single PDF generation
+                console.log('Sending to backend:', { ...formData, template: selectedTemplate })
+                
+                const response = await fetch('/api/generate-pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...formData,
+                        template: selectedTemplate
+                    }),
+                })
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate PDF')
+                }
+
+                // Get the PDF blob
+                const blob = await response.blob()
+
+                // Create a download link and trigger download
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = 'generated.pdf'
+                document.body.appendChild(a)
+                a.click()
+
+                // Cleanup
+                window.URL.revokeObjectURL(url)
+                document.body.removeChild(a)
+
+                setSuccess(true)
+                setTimeout(() => setSuccess(false), 3000)
             }
-
-            // Get the PDF blob
-            const blob = await response.blob()
-
-            // Create a download link and trigger download
-            const url = window.URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = 'generated.pdf'
-            document.body.appendChild(a)
-            a.click()
-
-            // Cleanup
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(a)
-
-            setSuccess(true)
-            setTimeout(() => setSuccess(false), 3000)
         } catch (err) {
             setError(err.message)
         } finally {
@@ -213,7 +483,110 @@ function App() {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* CSV Import Section */}
+                            <div className="mb-6 p-6 rounded-xl border-2 border-slate-200 bg-slate-50">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <i className="fas fa-file-csv text-xl" style={{ color: '#E63425' }}></i>
+                                    <h3 className="text-lg font-semibold text-slate-700">Batch Import (CSV)</h3>
+                                </div>
+                                
+                                <p className="text-sm text-slate-600 mb-4">
+                                    Generate multiple price tags at once by uploading a CSV file with product data.
+                                </p>
+
+                                {/* Drag and Drop Zone */}
+                                {!isBatchMode && (
+                                    <div
+                                        onDragOver={handleDragOver}
+                                        onDragLeave={handleDragLeave}
+                                        onDrop={handleDrop}
+                                        className={`mb-4 p-6 rounded-lg border-2 border-dashed transition-all cursor-pointer ${
+                                            isDragging
+                                                ? 'border-red-400 bg-red-50'
+                                                : 'border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        <div className="text-center">
+                                            <i className={`fas fa-cloud-upload-alt text-4xl mb-2 transition-colors ${
+                                                isDragging ? 'text-red-500' : 'text-slate-400'
+                                            }`}></i>
+                                            <p className={`text-sm font-medium mb-1 transition-colors ${
+                                                isDragging ? 'text-red-600' : 'text-slate-700'
+                                            }`}>
+                                                Drag and drop CSV file here
+                                            </p>
+                                            <p className="text-xs text-slate-500">or click the button below</p>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="flex flex-wrap gap-3">
+                                    {/* Download Template Button */}
+                                    <button
+                                        type="button"
+                                        onClick={handleDownloadTemplate}
+                                        className="flex items-center gap-2 px-4 py-2 bg-white border-2 border-slate-300 text-slate-700 rounded-lg font-medium transition-all hover:border-slate-400 hover:shadow-md"
+                                    >
+                                        <i className="fas fa-download"></i>
+                                        Download CSV Template
+                                    </button>
+
+                                    {/* Upload CSV Button */}
+                                    {!isBatchMode && (
+                                        <label className="flex items-center gap-2 px-4 py-2 border-2 rounded-lg font-medium cursor-pointer transition-all hover:shadow-md"
+                                            style={{ 
+                                                backgroundColor: '#E63425', 
+                                                borderColor: '#E63425',
+                                                color: 'white'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#c42a1f'
+                                                e.currentTarget.style.borderColor = '#c42a1f'
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.backgroundColor = '#E63425'
+                                                e.currentTarget.style.borderColor = '#E63425'
+                                            }}
+                                        >
+                                            <i className="fas fa-upload"></i>
+                                            Import CSV File
+                                            <input
+                                                type="file"
+                                                accept=".csv"
+                                                onChange={handleCsvUpload}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    )}
+
+                                    {/* Clear CSV Button */}
+                                    {isBatchMode && (
+                                        <button
+                                            type="button"
+                                            onClick={handleClearCsv}
+                                            className="flex items-center gap-2 px-4 py-2 bg-slate-600 border-2 border-slate-600 text-white rounded-lg font-medium transition-all hover:bg-slate-700 hover:border-slate-700 hover:shadow-md"
+                                        >
+                                            <i className="fas fa-times"></i>
+                                            Clear CSV
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* CSV Status Message */}
+                                {isBatchMode && csvData.length > 0 && (
+                                    <div className="mt-4 p-3 rounded-lg border-2 border-green-200 bg-green-50">
+                                        <p className="text-sm font-semibold text-green-700 flex items-center gap-2">
+                                            <i className="fas fa-check-circle"></i>
+                                            CSV loaded: {csvData.length} product{csvData.length !== 1 ? 's' : ''} ready to generate
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                     <form onSubmit={handleSubmit} className="space-y-6">
+                        {/* Input Fields - Hidden when CSV is loaded */}
+                        {!isBatchMode && (
+                            <>
                         {/* Two Column Grid Layout */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                             {/* Left Column - Fields 1, 2, 3 */}
@@ -328,6 +701,8 @@ function App() {
                                 </div>
                             </div>
                         </div>
+                        </>
+                        )}
 
                         {/* Error Message */}
                         {error && (
@@ -359,12 +734,12 @@ function App() {
                                 {isLoading ? (
                                     <span className="flex items-center justify-center gap-3">
                                         <i className="fas fa-spinner fa-spin"></i>
-                                        Generating PDF...
+                                        {isBatchMode ? `Generating ${csvData.length} PDFs...` : 'Generating PDF...'}
                                     </span>
                                 ) : (
                                     <span className="flex items-center justify-center gap-2">
                                         <i className="fas fa-file-pdf"></i>
-                                        Generate Price Tag PDF
+                                        {isBatchMode ? `Generate ${csvData.length} Price Tag${csvData.length !== 1 ? 's' : ''} PDF` : 'Generate Price Tag PDF'}
                                     </span>
                                 )}
                             </button>
