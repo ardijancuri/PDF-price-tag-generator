@@ -399,14 +399,14 @@ function App() {
                             />
                         </div>
                     ) : (
-                        <h1 className="text-3xl md:text-5xl font-bold leading-snug md:leading-relaxed mb-4" style={{ color: '#E63425' }}>
+                        <h1 className="text-2xl md:text-4xl font-bold leading-snug md:leading-relaxed mb-4" style={{ color: '#E63425' }}>
                             Discount Price Tag Generator
                         </h1>
                     )}
                     <p className="text-slate-600 text-md">
                         {step === 'select' 
                             ? 'Choose a template design for your price tag'
-                            : 'Fill in the product details to generate a discount price tag PDF'
+                            : ''
                         }
                     </p>
                 </div>
