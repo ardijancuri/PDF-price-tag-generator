@@ -386,16 +386,16 @@ function App() {
     }
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+        <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <div className="max-w-7xl mx-auto w-full">
                 {/* Header */}
-                <div className="text-center mb-4 md:mb-12">
+                <div className="text-center mb-6">
                     {step === 'select' ? (
                         <div className="mb-4 flex justify-center">
                             <img 
                                 src={comboLogo} 
                                 alt="COMBO Logo" 
-                                className="h-10 md:h-14 w-auto"
+                                className="h-8 md:h-8 w-auto"
                             />
                         </div>
                     ) : (
@@ -403,7 +403,7 @@ function App() {
                             Discount Price Tag Generator
                         </h1>
                     )}
-                    <p className="text-slate-600 text-lg">
+                    <p className="text-slate-600 text-md">
                         {step === 'select' 
                             ? 'Choose a template design for your price tag'
                             : 'Fill in the product details to generate a discount price tag PDF'
@@ -413,16 +413,16 @@ function App() {
 
                 {/* Step 1: Template Selection */}
                 {step === 'select' && (
-                    <div className="space-y-8">
+                    <div className="space-y-8 max-w-4xl mx-auto">
                         {/* Template Grid */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 justify-items-center">
                             {templates.map((template) => (
                                 <div
                                     key={template.id}
                                     onClick={() => handleTemplateSelect(template.id)}
-                                    className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+                                    className="group cursor-pointer transform transition-all duration-300 hover:scale-105 w-full max-w-[320px] md:max-w-[220px]"
                                 >
-                                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-slate-200 hover:shadow-2xl transition-all" onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E63425'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgb(226 232 240)'}>
+                                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border-2 border-slate-200 transition-all" onMouseEnter={(e) => e.currentTarget.style.borderColor = '#E63425'} onMouseLeave={(e) => e.currentTarget.style.borderColor = 'rgb(226 232 240)'}>
                                         {/* Template Image */}
                                         <div className="aspect-[3/4] overflow-hidden bg-slate-100">
                                             <img
@@ -432,13 +432,23 @@ function App() {
                                             />
                                         </div>
                                         {/* Template Name */}
-                                        <div className="p-4 text-center bg-gradient-to-br from-slate-50 to-slate-50 transition-colors" onMouseEnter={(e) => { e.currentTarget.style.background = 'linear-gradient(to bottom right, rgba(230, 52, 37, 0.1), rgba(230, 52, 37, 0.05))' }} onMouseLeave={(e) => { e.currentTarget.style.background = 'linear-gradient(to bottom right, rgb(248 250 252), rgb(248 250 252))' }}>
-                                            <h3 className="font-semibold text-slate-800 text-sm md:text-base">
-                                                {template.name}
-                                            </h3>
-                                            <p className="text-xs text-slate-600 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                Click to select
-                                            </p>
+                                        <div className="p-2 py-1 text-center bg-gradient-to-br from-slate-50 to-slate-50 group-hover:bg-red-50 transition-colors">
+                                            <div className="block">
+                                                {template.name.includes(' - ') ? (
+                                                    <>
+                                                        <h3 className="font-semibold text-slate-800 text-sm md:text-sm leading-tight">
+                                                            {template.name.split(' - ')[0]}
+                                                        </h3>
+                                                        <p className="text-slate-600 text-xs md:text-xs leading-tight">
+                                                            {template.name.split(' - ')[1]}
+                                                        </p>
+                                                    </>
+                                                ) : (
+                                                    <h3 className="font-semibold text-slate-800 text-sm md:text-sm leading-tight">
+                                                        {template.name}
+                                                    </h3>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
